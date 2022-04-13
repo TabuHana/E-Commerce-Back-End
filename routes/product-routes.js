@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Product, Category, Tag, ProductTag } = require('../../models')
+const { Product, Category, Tag, ProductTag } = require('../models')
 
 // The `/api/products` endpoint
 
@@ -7,12 +7,28 @@ const { Product, Category, Tag, ProductTag } = require('../../models')
 router.get('/products', (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
+  try {
+    Product.findAll({ include: [Category, Tag] })
+    .then(productSeek => {
+      res.json(productSeek)
+    })
+  } catch (err) {
+    res.status(500).json(err)
+  }
 })
 
 // get one product
 router.get('/products/:id', (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
+  try {
+    Product.findOne({ where: { id: req.params.id }, include: [Category, Tag] })
+    .then(productSeek => {
+      res.json(productSeek)
+    })
+  } catch (err) {
+    res.status(500).json(err)
+  }
 })
 
 // create new product
@@ -91,6 +107,14 @@ router.put('/products/:id', (req, res) => {
 
 router.delete('/products/:id', (req, res) => {
   // delete one product by its `id` value
+  try {
+    Product.destroy({ where: { product_id: req.params.id } })
+    .then(productDelete) {
+      res.sendStatus(200)
+    }
+  } catch (err) {
+    res.status(400).json(err)
+  }
 })
 
 module.exports = router
